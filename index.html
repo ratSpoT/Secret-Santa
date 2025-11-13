@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secret Santa</title>
+<style>
+  body { 
+    font-family: Arial; 
+    text-align: center; 
+    padding: 50px; 
+    background: #ffefc3; 
+  }
+  h1 { color: #d32f2f; }
+  input, button { padding: 10px; margin: 5px; font-size: 16px; }
+  #result { margin-top: 20px; font-size: 20px; color: #2e7d32; font-weight: bold; }
+  footer { margin-top: 50px; font-size: 14px; color: #555; }
+</style>
+</head>
+<body>
+<h1>🎄 Secret Santa 🎄</h1>
+<p>Enter your name to see who you are gifting:</p>
+<input type="text" id="nameInput" placeholder="Your name">
+<button onclick="drawSanta()">Draw</button>
+<div id="result"></div>
+<footer>The deadline is 21st December!</footer>
+
+<script>
+// ============================
+// CONFIGURE PARTICIPANTS & AVOID RULES HERE
+// ============================
+const participants = ["LR", "LK", "LY", "SP", "YP", "KP", "CP"];
+
+// Avoid rules: keys are givers, values are arrays of people they cannot gift
+const avoidDict = {
+  "LR": [],
+  "LK": ["LY"],
+  "LY": ["LK"],
+  "SP": ["KP"],
+  "YP": [],
+  "KP": ["SP"],
+  "CP": []
+};
+
+// ============================
+// ASSIGNMENT LOGIC
+// ============================
+let pairs = {};
+
+function generatePairs() {
+  let receivers = [...participants];
+
+  function validAssignment() {
+    return participants.every((giver, i) => 
+      giver !== receivers[i] && !avoidDict[giver].includes(receivers[i])
+    );
+  }
+
+  let attempts = 0;
+  while(true) {
+    receivers = [...participants];
+    for(let i = receivers.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [receivers[i], receivers[j]] = [receivers[j], receivers[i]];
+    }
+    if(validAssignment()) break;
+    attempts++;
+    if(attempts > 5000) {
+      alert("Couldn't find a valid arrangement. Check avoid rules.");
+      return;
+    }
+  }
+
+  participants.forEach((giver, i) => {
+    pairs[giver] = receivers[i];
+  });
+}
+
+// Generate pairs once on page load
+generatePairs();
+
+// ============================
+// DRAW FUNCTION WITH COUNTDOWN
+// ============================
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function drawSanta() {
+  const name = document.getElementById("nameInput").value.trim();
+  const resultDiv = document.getElementById("result");
+
+  if (!pairs[name]) {
+    resultDiv.textContent = "❌ Name not found! Please check your spelling.";
+    return;
+  }
+
+  resultDiv.textContent = "";
+  for (let i = 3; i > 0; i--) {
+    resultDiv.textContent = `🎁 Revealing your Santee in ${i}...`;
+    await sleep(1000);
+  }
+
+  resultDiv.textContent = `🎄 ${name}, your Secret Santee is: 🎉 ${pairs[name]} 🎉`;
+}
+</script>
+</body>
+</html>
