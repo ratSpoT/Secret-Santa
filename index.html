@@ -19,7 +19,7 @@
 </head>
 <body>
 <h1>🎄 Secret Santa 🎄</h1>
-<p>Enter your name to see who you are gifting:</p>
+<p>Enter your name (without surname) to see who you are gifting :</p>
 <input type="text" id="nameInput" placeholder="Your name">
 <button onclick="drawSanta()">Draw</button>
 <div id="result"></div>
@@ -29,17 +29,20 @@
 // ============================
 // CONFIGURE PARTICIPANTS & AVOID RULES HERE
 // ============================
-const participants = ["LR", "LK", "LY", "SP", "YP", "KP", "CP"];
+const participants = ["lingrui", "lingkai", "lingyou", "siowpheng", "yanpheng", "karpheng", "xinyue", "xinna", "stephan", "skylar"];
 
 // Avoid rules: keys are givers, values are arrays of people they cannot gift
 const avoidDict = {
-  "LR": [],
-  "LK": ["LY"],
-  "LY": ["LK"],
-  "SP": ["KP"],
-  "YP": [],
-  "KP": ["SP"],
-  "CP": []
+  "lingrui": [],
+  "lingkai": [],
+  "lingyou": [],
+  "siowpheng": [],
+  "yanpheng": [],
+  "karpheng": [],
+  "xinyue": ["xinna"],
+  "xinna": ["xinyue"],
+  "stephan": ["skylar"],
+  "skylar": ["stephan"]
 };
 
 // ============================
@@ -87,7 +90,8 @@ function sleep(ms) {
 }
 
 async function drawSanta() {
-  const name = document.getElementById("nameInput").value.trim();
+  // removes all space from names and turn them into lowercases
+  const name = document.getElementById("nameInput").value.replace(/\s/g, '').toLowerCase();
   const resultDiv = document.getElementById("result");
 
   if (!pairs[name]) {
@@ -106,3 +110,4 @@ async function drawSanta() {
 </script>
 </body>
 </html>
+
